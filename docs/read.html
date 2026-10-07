@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reading – Reporting Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <span class="brand">Reporting Simulator</span>
+    <nav>
+      <a href="index.html">Worklist</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Reading screen <span id="case-id"></span></h1>
+    <p class="placeholder-note">Placeholder page. The viewer and report saving are not wired up yet.</p>
+
+    <div class="split">
+      <div class="panel viewer-box">OHIF viewer will load the full study here</div>
+
+      <div class="panel">
+        <h2>Your report</h2>
+        <textarea placeholder="Findings and impression..."></textarea>
+
+        <label for="confidence">Confidence</label>
+        <select id="confidence">
+          <option>Low</option>
+          <option selected>Moderate</option>
+          <option>High</option>
+        </select>
+
+        <label class="inline">
+          <input type="checkbox"> I would call the clinician
+        </label>
+
+        <a class="button" id="submit" href="reveal.html">Submit report</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    var caseId = new URLSearchParams(location.search).get('case');
+    if (caseId) {
+      document.getElementById('case-id').textContent = '– ' + caseId.toUpperCase();
+      document.getElementById('submit').href = 'reveal.html?case=' + encodeURIComponent(caseId);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reveal – Reporting Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <span class="brand">Reporting Simulator</span>
+    <nav>
+      <a href="index.html">Worklist</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Reveal <span id="case-id"></span></h1>
+    <p class="placeholder-note">Placeholder page. No real case content yet.</p>
+
+    <div class="split even">
+      <div class="panel">
+        <h2>Your report</h2>
+        <p>Your submitted report will appear here.</p>
+      </div>
+      <div class="panel">
+        <h2>Reference report</h2>
+        <p>The radiologist-reviewed reference report will appear here.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Rubric (self-assessed)</h2>
+      <ul class="checklist">
+        <li><label class="inline"><input type="checkbox"> Rubric item 1</label></li>
+        <li><label class="inline"><input type="checkbox"> Rubric item 2</label></li>
+        <li><label class="inline"><input type="checkbox"> Rubric item 3</label></li>
+      </ul>
+    </div>
+
+    <div class="split even">
+      <div class="panel">
+        <h2>Key findings</h2>
+        <p>Annotated key images and lesion overlays will appear here.</p>
+      </div>
+      <div class="panel">
+        <h2>Proof of diagnosis</h2>
+        <p>Reference standard (histopathology, surgery, follow-up etc.) will appear here.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Teaching points</h2>
+      <p>Short teaching points will appear here.</p>
+    </div>
+
+    <a class="button" href="index.html">Back to worklist</a>
+  </main>
+
+  <script>
+    var caseId = new URLSearchParams(location.search).get('case');
+    if (caseId) {
+      document.getElementById('case-id').textContent = '– ' + caseId.toUpperCase();
+    }
+  </script>
+</body>
+</html>
