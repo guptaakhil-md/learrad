@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ohif",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "serve", "tools/ohif/package/dist", "-l", "3000"],
+      "port": 3000
+    },
+    {
+      "name": "site",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "serve", "docs", "-l", "3001"],
+      "port": 3001
+    }
+  ]
+}
