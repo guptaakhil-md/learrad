@@ -34,11 +34,18 @@ No MCQs, no single-image spotters, no theory courses.
 - Check and record the licence and required citation of EVERY collection used.
   Only use collections that allow commercial use (e.g. CC BY 4.0).
 
-## Architecture (MVP, no backend)
-- Frontend: static site hosted on GitHub Pages.
-- Viewer: OHIF Viewer v3 in static DICOMweb mode. Keep the viewer swappable; case
-  content must not depend on OHIF.
-- Images: Cloudflare R2 (zero egress fees). Never store DICOM in the git repo.
+## Architecture (MVP, no backend, zero cost)
+- Budget: the owner's only cost is a Claude subscription. No domain, no paid hosting,
+  no card-on-file services for now.
+- Frontend: static site hosted on GitHub Pages (guptaakhil-md.github.io/learrad).
+- Viewer: OHIF Viewer v3 in static DICOMweb mode, deployed on GitHub Pages too. Keep the
+  viewer swappable; case content must not depend on OHIF.
+- Images: separate public GitHub data repos (e.g. learrad-cases-01), each served by its
+  own GitHub Pages site as static DICOMweb. Same origin as the app, so no CORS problems.
+  Stay under GitHub limits (100 MB per file, ~1 GB per Pages site); start a new data
+  repo when one fills up. Cloudflare R2 is the upgrade path later, not now.
+- DICOM is never committed to the main code repo (learrad). Only de-identified,
+  licence-checked public-collection images may go into the data repos.
 - Each case = standard DICOM study + a separate case file (JSON) holding history,
   reference standard, findings, reference report, rubric, teaching points, tags, licence.
 - User progress: browser storage only (no accounts yet).
@@ -48,6 +55,23 @@ No MCQs, no single-image spotters, no theory courses.
 - Code is open source (MIT). Reference reports and rubrics are the core asset and will
   live separately; do not publish them without the owner's approval.
 - Owner works on Windows. Explain steps in plain language; ask before installing software.
+
+## Working with the Cowork session (READ THIS EVERY SESSION)
+The owner talks mainly to a Claude Cowork session, which plans and reviews. You (Claude
+Code) build. You talk to each other through files in `coord/`:
+- `coord/PLAN.md` – the full roadmap. Written by Cowork. Follow it; if you disagree,
+  say so in FROM_CODE.md instead of silently changing course.
+- `coord/TO_CODE.md` – instructions from Cowork to you, numbered MSG-001, MSG-002...
+  Work on every message marked `Status: OPEN`, oldest first.
+- `coord/FROM_CODE.md` – your replies. Append a new section per message
+  (`## RE MSG-00X`), never rewrite old ones. Use the template at the top of that file.
+- `coord/PROGRESS.md` – the status board. You keep it current after every work
+  session: phase status, what is done, what is blocked, what the owner must do.
+When the owner says "check inbox" (or similar), re-read CLAUDE.md and coord/, do the
+OPEN messages, update FROM_CODE.md and PROGRESS.md, then mark the message
+`Status: DONE` in TO_CODE.md. Do not edit PLAN.md except ticking checkboxes.
+Anything needing the owner (installs, accounts, approvals, medical sign-off) goes under
+"Questions for owner" in your reply, and you stop at that point rather than guess.
 
 ## Later (not now)
 AI grading of free-text reports, paid human second read, user accounts, B2B access for

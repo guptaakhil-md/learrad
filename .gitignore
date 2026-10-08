@@ -35,3 +35,6 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Private Cowork <-> Claude Code message files (never publish)
+/coord/
