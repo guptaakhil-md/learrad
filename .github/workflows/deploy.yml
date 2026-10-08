@@ -1,0 +1,98 @@
+name: Deploy site and viewer
+
+# Builds the OHIF viewer from source for the /learrad/viewer/ sub-path, puts it next
+# to the static site in docs/, and publishes everything to GitHub Pages.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'viewer/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  OHIF_VERSION: v3.13.12
+  VIEWER_PATH: /learrad/viewer/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The viewer build takes several minutes; reuse it until OHIF_VERSION or our
+      # config changes.
+      - name: Restore cached viewer build
+        id: viewer-cache
+        uses: actions/cache@v4
+        with:
+          path: viewer-dist
+          key: ohif-${{ env.OHIF_VERSION }}-${{ hashFiles('viewer/app-config.js', '.github/workflows/deploy.yml') }}
+
+      - name: Check out OHIF
+        if: steps.viewer-cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: OHIF/Viewers
+          ref: ${{ env.OHIF_VERSION }}
+          path: ohif
+
+      - name: Set up pnpm
+        if: steps.viewer-cache.outputs.cache-hit != 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ohif/package.json
+
+      - name: Set up Node
+        if: steps.viewer-cache.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Build OHIF
+        if: steps.viewer-cache.outputs.cache-hit != 'true'
+        working-directory: ohif
+        env:
+          PUBLIC_URL: ${{ env.VIEWER_PATH }}
+          APP_CONFIG: config/learrad.js
+        run: |
+          cp ../viewer/app-config.js platform/app/public/config/learrad.js
+          pnpm install --frozen-lockfile
+          pnpm run build
+          mv platform/app/dist ../viewer-dist
+          find ../viewer-dist -name '*.map' -delete
+
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -r docs/. _site/
+          cp -r viewer-dist _site/viewer
+          # GitHub Pages has no URL rewrites: unknown paths (the viewer's own routes)
+          # fall back to the viewer's index page.
+          cp viewer-dist/index.html _site/404.html
+          du -sh _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
