@@ -18,4 +18,5 @@ try {
 }
 
 Copy-Item (Join-Path $root 'viewer\serve.json') (Join-Path $target 'package\dist\serve.json')
+Copy-Item (Join-Path $root 'viewer\app-config.js') (Join-Path $target 'package\dist\app-config.js') -Force
 Write-Host "OHIF $version ready. Start it with:  npx serve tools/ohif/package/dist -l 3000"

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Worklist – Reporting Simulator</title>
   <link rel="stylesheet" href="style.css">
+  <script src="app.js"></script>
 </head>
 <body>
   <header>
@@ -16,7 +17,6 @@
 
   <main>
     <h1>Worklist</h1>
-    <p class="placeholder-note">Placeholder page. These rows are dummy entries, not real cases.</p>
 
     <table>
       <thead>
@@ -29,33 +29,45 @@
           <th>Status</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td><a href="read.html?case=demo-001">DEMO-001</a></td>
-          <td>54 / M</td>
-          <td>MR</td>
-          <td>MRI brain with contrast</td>
-          <td>First seizure. ?SOL</td>
-          <td>Unread</td>
-        </tr>
-        <tr>
-          <td><a href="read.html?case=demo-002">DEMO-002</a></td>
-          <td>37 / F</td>
-          <td>MR</td>
-          <td>MRI brain</td>
-          <td>Headache 3 weeks, worse in the morning</td>
-          <td>Unread</td>
-        </tr>
-        <tr>
-          <td><a href="read.html?case=demo-003">DEMO-003</a></td>
-          <td>68 / M</td>
-          <td>CT</td>
-          <td>CT head plain</td>
-          <td>Fall at home. On anticoagulants</td>
-          <td>Unread</td>
-        </tr>
+      <tbody id="worklist">
+        <tr><td colspan="6">Loading…</td></tr>
       </tbody>
     </table>
   </main>
+
+  <script>
+    function cell(text) {
+      var td = document.createElement('td');
+      td.textContent = text;
+      return td;
+    }
+
+    loadCases().then(function (cases) {
+      var body = document.getElementById('worklist');
+      body.textContent = '';
+      cases.forEach(function (c) {
+        var row = document.createElement('tr');
+        var first = document.createElement('td');
+        var link = document.createElement('a');
+        link.href = 'read.html?case=' + encodeURIComponent(c.id);
+        link.textContent = c.id.toUpperCase();
+        first.appendChild(link);
+        row.appendChild(first);
+        row.appendChild(cell(c.age + ' / ' + c.sex));
+        row.appendChild(cell(c.modality));
+        row.appendChild(cell(c.study));
+        row.appendChild(cell(c.history));
+        row.appendChild(cell('Unread'));
+        body.appendChild(row);
+      });
+    }).catch(function (error) {
+      document.getElementById('worklist').innerHTML = '';
+      var row = document.createElement('tr');
+      var td = cell(error.message);
+      td.colSpan = 6;
+      row.appendChild(td);
+      document.getElementById('worklist').appendChild(row);
+    });
+  </script>
 </body>
 </html>

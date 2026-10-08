@@ -10,7 +10,7 @@
     {
       "name": "site",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["--yes", "serve", "docs", "-l", "3001"],
+      "runtimeArgs": ["--yes", "http-server", "docs", "-p", "3001", "-c-1"],
       "port": 3001
     }
   ]

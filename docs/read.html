@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Reading – Reporting Simulator</title>
   <link rel="stylesheet" href="style.css">
+  <script src="app.js"></script>
 </head>
 <body>
   <header>
@@ -12,14 +13,15 @@
     <nav>
       <a href="index.html">Worklist</a>
     </nav>
+    <span class="case-line" id="case-line"></span>
   </header>
 
-  <main>
-    <h1>Reading screen <span id="case-id"></span></h1>
-    <p class="placeholder-note">Placeholder page. The viewer and report saving are not wired up yet.</p>
-
-    <div class="split">
-      <div class="panel viewer-box">OHIF viewer will load the full study here</div>
+  <main class="wide">
+    <div class="split reading">
+      <div class="viewer-box">
+        <iframe id="viewer" title="Image viewer" allow="fullscreen"></iframe>
+        <p id="viewer-message">Loading case…</p>
+      </div>
 
       <div class="panel">
         <h2>Your report</h2>
@@ -37,16 +39,29 @@
         </label>
 
         <a class="button" id="submit" href="reveal.html">Submit report</a>
+        <p class="placeholder-note">Saving and the reveal page are not wired up yet.</p>
       </div>
     </div>
   </main>
 
   <script>
     var caseId = new URLSearchParams(location.search).get('case');
-    if (caseId) {
-      document.getElementById('case-id').textContent = '– ' + caseId.toUpperCase();
-      document.getElementById('submit').href = 'reveal.html?case=' + encodeURIComponent(caseId);
-    }
+    var message = document.getElementById('viewer-message');
+
+    loadCases().then(function (cases) {
+      var c = findCase(cases, caseId);
+      if (!c) {
+        message.textContent = 'Case not found. Go back to the worklist.';
+        return;
+      }
+      document.getElementById('case-line').textContent =
+        c.id.toUpperCase() + ' · ' + c.age + ' / ' + c.sex + ' · ' + c.study + ' · ' + c.history;
+      document.getElementById('submit').href = 'reveal.html?case=' + encodeURIComponent(c.id);
+      document.getElementById('viewer').src = viewerUrl(c);
+      message.remove();
+    }).catch(function (error) {
+      message.textContent = error.message;
+    });
   </script>
 </body>
 </html>

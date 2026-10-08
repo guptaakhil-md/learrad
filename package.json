@@ -1,0 +1,13 @@
+{
+  "name": "learrad",
+  "private": true,
+  "description": "Radiology reporting simulator (working name)",
+  "license": "MIT",
+  "scripts": {
+    "site": "npx http-server docs -p 3001 -c-1",
+    "viewer": "npx serve tools/ohif/package/dist -l 3000"
+  },
+  "devDependencies": {
+    "dcmjs": "^0.41.0"
+  }
+}

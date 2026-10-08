@@ -2,47 +2,67 @@
 
 A web platform where radiologists practise reporting on real, full-stack CT/MRI
 cases with proven final diagnoses: read the study, write a report, then compare
-it with a reference report and rubric.
+it with a reference report.
 
 Built for qualified radiologists who want more independent reporting practice.
-It is not an exam-prep product.
+It is not an exam-prep product. **Not for clinical use.**
 
 ## Status
 
-Early skeleton. Placeholder pages only.
+Phase 1: one real case end to end. Worklist and reading screen work; saving and
+the reveal page are still placeholders.
 
 ## Layout
 
-- `docs/` – the static site (served by GitHub Pages)
-- `data/` – local imaging data, gitignored. DICOM/NIfTI are never committed.
+- `docs/` – the static site (worklist, reading screen, reveal) and `cases/index.json`
+- `viewer/` – our OHIF configuration
+- `scripts/` – `setup-ohif.ps1` (local viewer), `build-dicom-json.js` (study index)
+- `.github/workflows/deploy.yml` – builds OHIF and publishes site + viewer to GitHub Pages
+- `data/` – local imaging data, gitignored. DICOM/NIfTI are never committed here.
 - `CLAUDE.md` – project brief and rules
+
+Images live in separate public data repos (first one:
+[learrad-cases-01](https://github.com/guptaakhil-md/learrad-cases-01)) as plain
+`.dcm` files plus one OHIF "DICOM JSON" index per study.
 
 ## Run locally
 
-```bash
-npx serve docs
-```
-
-## Run the OHIF viewer locally
-
-One-time download of the prebuilt OHIF Viewer v3 into `tools/ohif` (gitignored):
+One-time setup (downloads the prebuilt OHIF Viewer v3 into `tools/ohif`, gitignored):
 
 ```powershell
+npm install
 .\scripts\setup-ohif.ps1
 ```
 
-Then start it and open a public sample study:
+Then, in two terminals:
 
 ```bash
-npx serve tools/ohif/package/dist -l 3000
+npm run viewer
 ```
 
-http://localhost:3000/viewer?StudyInstanceUIDs=2.16.840.1.114362.1.11972228.22789312658.616067305.306.2
+```bash
+npm run site
+```
 
-For now the viewer reads OHIF's public static DICOMweb demo server.
+Open http://localhost:3001. Note: GitHub Pages rejects cross-origin preflight
+requests, so a local viewer cannot load images from the live data repos. To view
+a case locally, serve a local copy of the data repo with CORS
+(`npx serve data/learrad-cases-01 -l 3003 --cors`) and build its index with a
+`http://localhost:3003/...` prefix.
 
-## Licence
+## Add a study
 
-Code is MIT (see `LICENSE`). Imaging data comes from third-party public
-collections under their own licences; reference reports and rubrics are not
-part of this repository.
+```bash
+node scripts/build-dicom-json.js <studyFolder> <publicUrlOfThatFolder/> <studyFolder>/study.json <caseId>
+```
+
+## Licence and data credits
+
+Code is MIT (see `LICENSE`).
+
+Imaging data is not part of this repository. Cases currently come from the ReMIND
+collection on The Cancer Imaging Archive, licensed CC BY 4.0: Juvekar P, Dorent R,
+Kögl F, et al. (2023). The Brain Resection Multimodal Imaging Database (ReMIND)
+(Version 1) [dataset]. The Cancer Imaging Archive.
+https://doi.org/10.7937/3RAG-D070. Use is subject to the
+[TCIA Data Usage Policy](https://www.cancerimagingarchive.net/data-usage-policies-and-restrictions/).
