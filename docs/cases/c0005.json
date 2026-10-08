@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "id": "c0001",
-  "age": 28,
+  "id": "c0005",
+  "age": 76,
   "sex": "M",
   "modality": "MR",
   "system": "neuro",
   "study": "MRI brain with contrast",
-  "history": "New-onset seizures.",
+  "history": "Confusion and personality change for 1 month.",
   "historyNote": "Teaching history written for this simulator; not the patient's actual record.",
   "viewer": {
     "type": "dicomjson",
-    "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0001/study.json"
+    "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0005/study.json"
   },
-  "referenceFile": "c0001.reference.json",
+  "referenceFile": "c0005.reference.json",
   "source": {
     "collection": "ReMIND",
     "licence": "CC BY 4.0",

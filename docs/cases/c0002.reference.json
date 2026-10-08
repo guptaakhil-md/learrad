@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "caseId": "c0002",
+  "status": "draft",
+  "signOff": null,
+  "referenceStandard": {
+    "type": "histopathology",
+    "summary": "Surgical resection with histopathology."
+  },
+  "proofOfDiagnosis": [
+    "Histopathology: metastatic renal cell carcinoma.",
+    "Location recorded by the treating team: left parietal lobe.",
+    "Pre-operative lesion volume from the collection's segmentation: about 4.3 mL.",
+    "Recorded by the collection as enhancing; T2/FLAIR hyperintensity recorded as absent.",
+    "No previous craniotomy."
+  ],
+  "whatImagingCanDecide": null,
+  "referenceReport": {
+    "technique": "MRI brain at 1.5 T: axial T2 (BLADE), axial T2 FLAIR, 3D axial T1 post-contrast, 3D axial T2 (SPACE). No pre-contrast T1, diffusion, susceptibility or perfusion sequences are included in the published study. Images are defaced.",
+    "findings": null,
+    "impression": null,
+    "recommendation": null
+  },
+  "teachingPoints": [],
+  "tags": [],
+  "difficulty": null,
+  "rubric": []
+}

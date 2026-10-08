@@ -42,6 +42,9 @@ const PRIVATE_DIR = path.join(__dirname, '..', 'data', 'private');
 
 const { DicomMessage, DicomMetaDictionary } = dcmjs.data;
 
+// dcmjs logs "Invalid vr type ox" for every file it parses; that is harmless noise here.
+dcmjs.log.getLogger('validation.dcmjs').setLevel('silent');
+
 // dcmjs prints "Invalid vr type ox" once per file while parsing; silence it.
 function quietly(fn) {
   const saved = { log: console.log, warn: console.warn, error: console.error };
@@ -313,3 +316,17 @@ console.log(`Published copy: ${(totalBytes / 1048576).toFixed(1)} MB in ${files.
 console.log(`Pixel data verified unchanged in all ${files.length} files`);
 console.log(`Index: ${(fs.statSync(indexPath).size / 1024).toFixed(0)} KB -> ${indexPath}`);
 console.log(`Private mapping: data/private/${caseId}.mapping.json`);
+
+// Check the case files as well, so a missing or broken case file is noticed right away.
+const caseFile = path.join(__dirname, '..', 'docs', 'cases', `${caseId}.json`);
+if (!fs.existsSync(caseFile)) {
+  console.log(`\nNext: write docs/cases/${caseId}.json and ${caseId}.reference.json, and add`);
+  console.log(`"${caseId}" to docs/cases/index.json. Then run: node scripts/validate-cases.js`);
+} else {
+  console.log('\nValidating case files...');
+  const { spawnSync } = require('child_process');
+  const result = spawnSync(process.execPath, [path.join(__dirname, 'validate-cases.js')], {
+    stdio: 'inherit',
+  });
+  process.exit(result.status === null ? 1 : result.status);
+}

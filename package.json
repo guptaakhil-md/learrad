@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "site": "npx http-server docs -p 3001 -c-1",
-    "viewer": "npx serve tools/ohif/package/dist -l 3000"
+    "viewer": "npx serve tools/ohif/package/dist -l 3000",
+    "validate": "node scripts/validate-cases.js"
   },
   "devDependencies": {
     "dcmjs": "^0.41.0"

@@ -22,5 +22,8 @@
     "impression": null,
     "recommendation": null
   },
-  "teachingPoints": []
+  "teachingPoints": [],
+  "tags": [],
+  "difficulty": null,
+  "rubric": []
 }

@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "caseId": "c0003",
+  "status": "draft",
+  "signOff": null,
+  "referenceStandard": {
+    "type": "histopathology",
+    "summary": "Surgical resection with histopathology."
+  },
+  "proofOfDiagnosis": [
+    "Histopathology: atypical meningioma, WHO grade 2 (WHO CNS 2021 classification).",
+    "Location recorded by the treating team: paramedian left parietal.",
+    "Pre-operative lesion volume from the collection's segmentation: about 0.4 mL.",
+    "Recorded by the collection as enhancing; T2/FLAIR hyperintensity recorded as absent.",
+    "No previous craniotomy."
+  ],
+  "whatImagingCanDecide": null,
+  "referenceReport": {
+    "technique": "MRI brain at 3 T: axial T2, axial T2 FLAIR, 3D axial T1 post-contrast. No pre-contrast T1, diffusion, susceptibility or perfusion sequences are included in the published study. Images are defaced.",
+    "findings": null,
+    "impression": null,
+    "recommendation": null
+  },
+  "teachingPoints": [],
+  "tags": [],
+  "difficulty": null,
+  "rubric": []
+}

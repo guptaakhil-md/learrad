@@ -1,18 +1,18 @@
 {
   "schema": 1,
-  "id": "c0001",
-  "age": 28,
-  "sex": "M",
+  "id": "c0003",
+  "age": 32,
+  "sex": "F",
   "modality": "MR",
   "system": "neuro",
   "study": "MRI brain with contrast",
-  "history": "New-onset seizures.",
+  "history": "Single focal seizure involving the right leg.",
   "historyNote": "Teaching history written for this simulator; not the patient's actual record.",
   "viewer": {
     "type": "dicomjson",
-    "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0001/study.json"
+    "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0003/study.json"
   },
-  "referenceFile": "c0001.reference.json",
+  "referenceFile": "c0003.reference.json",
   "source": {
     "collection": "ReMIND",
     "licence": "CC BY 4.0",

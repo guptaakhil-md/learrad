@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "caseId": "c0004",
+  "status": "draft",
+  "signOff": null,
+  "referenceStandard": {
+    "type": "histopathology",
+    "summary": "Surgical resection with histopathology."
+  },
+  "proofOfDiagnosis": [
+    "Histopathology of the resected lesion: demyelinating lesions (multiple sclerosis plaques). Not a tumour.",
+    "Location recorded by the treating team: left occipital lobe.",
+    "Pre-operative lesion volume from the collection's segmentation: about 0.1 mL.",
+    "Recorded by the collection as enhancing with T2/FLAIR hyperintensity.",
+    "No previous craniotomy."
+  ],
+  "whatImagingCanDecide": null,
+  "referenceReport": {
+    "technique": "MRI brain at 3 T: axial T2, axial T2 FLAIR, 3D axial T1 post-contrast. No pre-contrast T1, diffusion, susceptibility or perfusion sequences are included in the published study. Images are defaced.",
+    "findings": null,
+    "impression": null,
+    "recommendation": null
+  },
+  "teachingPoints": [],
+  "tags": [],
+  "difficulty": null,
+  "rubric": []
+}

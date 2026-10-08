@@ -16,7 +16,9 @@ browser) and reveal page work for one case; its reference report is still a draf
 
 - `docs/` – the static site (worklist, reading screen, reveal) and `cases/index.json`
 - `viewer/` – our OHIF configuration
-- `scripts/` – `setup-ohif.ps1` (local viewer), `build-case.js` (de-identify a study and build its index)
+- `scripts/` – `setup-ohif.ps1` (local viewer), `download-remind.ps1` (fetch one pre-op study from TCIA),
+  `build-case.js` (de-identify a study and build its index), `validate-cases.js`
+  (check all case files; `npm run validate`)
 - `.github/workflows/deploy.yml` – builds OHIF and publishes site + viewer to GitHub Pages
 - `data/` – local imaging data, gitignored. DICOM/NIfTI are never committed here.
 - `CLAUDE.md` – project brief and rules
