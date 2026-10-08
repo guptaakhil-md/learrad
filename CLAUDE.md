@@ -29,31 +29,41 @@ No MCQs, no single-image spotters, no theory courses.
 - Every reference report and rubric is reviewed and signed off by a radiologist.
 
 ## Data sources (MVP)
-- TCIA collections (start with neuro-oncology / glioma, DICOM, pathology-proven).
+- TCIA: start with ReMIND (CC BY 4.0, DICOM, surgery + histopathology proven). Most
+  other TCIA brain MRI collections are now controlled-access: do not use them.
 - OpenNeuro epilepsy/FCD datasets later (NIfTI, needs conversion to DICOM).
 - Check and record the licence and required citation of EVERY collection used.
   Only use collections that allow commercial use (e.g. CC BY 4.0).
 
 ## Architecture (MVP, no backend, zero cost)
-- Budget: the owner's only cost is a Claude subscription. No domain, no paid hosting,
-  no card-on-file services for now.
-- Frontend: static site hosted on GitHub Pages (guptaakhil-md.github.io/learrad).
-- Viewer: OHIF Viewer v3 in static DICOMweb mode, deployed on GitHub Pages too. Keep the
-  viewer swappable; case content must not depend on OHIF.
-- Images: separate public GitHub data repos (e.g. learrad-cases-01), each served by its
-  own GitHub Pages site as static DICOMweb. Same origin as the app, so no CORS problems.
-  Stay under GitHub limits (100 MB per file, ~1 GB per Pages site); start a new data
-  repo when one fills up. Cloudflare R2 is the upgrade path later, not now.
-- DICOM is never committed to the main code repo (learrad). Only de-identified,
-  licence-checked public-collection images may go into the data repos.
-- Each case = standard DICOM study + a separate case file (JSON) holding history,
-  reference standard, findings, reference report, rubric, teaching points, tags, licence.
-- User progress: browser storage only (no accounts yet).
+- Budget: the owner's only cost is a Claude subscription. No domain, no paid hosting.
+- Repo `learrad` is public. Frontend: static site on GitHub Pages
+  (guptaakhil-md.github.io/learrad).
+- Viewer: OHIF Viewer v3, built from source in GitHub Actions with base path
+  /learrad/viewer/ (+ 404.html fallback). Keep the viewer swappable; case content must
+  not depend on OHIF.
+- Images: plain .dcm files + one OHIF "DICOM JSON" index per study, in separate public
+  GitHub data repos (learrad-cases-01, -02 ...), each with its own Pages site. Stay under
+  ~1 GB per repo and 100 MB per file. Cloudflare R2 is the later upgrade path.
+- Studies are shown COMPLETE (every series of the study as published). For ReMIND,
+  the complete pre-op MRI study; intra-op MRI and ultrasound are not shown for now.
+- DICOM is never committed to the code repo (learrad). Only de-identified,
+  licence-checked public-collection images go into the data repos.
+- Each case = DICOM study + public case metadata JSON + a SEPARATE reference report file
+  (so it can move behind login in Phase 3).
+- Phase 1–2: no login; reference reports are visible on the site (owner approved).
+  Progress in browser storage, behind one async storage module.
+- Phase 3 (later): Firebase Spark plan (free): Authentication + Firestore for progress
+  synced across devices and reference reports locked until the user submits a report.
+- Site shows CC BY credits, a note that images are de-identified/defaced and converted,
+  and "not for clinical use".
 
 ## Repository rules
-- Never commit DICOM, NIfTI or any patient data. Keep them in /data (gitignored).
-- Code is open source (MIT). Reference reports and rubrics are the core asset and will
-  live separately; do not publish them without the owner's approval.
+- Never commit DICOM, NIfTI or any patient data to the code repo. Local copies in /data
+  (gitignored).
+- Never commit `coord/` (private Cowork <-> Claude Code messages). Never force-add it.
+- Code is open source (MIT). Owner approved publishing reference reports for the 10–15
+  pilot cases. Rubrics and anything beyond that still need his approval.
 - Owner works on Windows. Explain steps in plain language; ask before installing software.
 
 ## Working with the Cowork session (READ THIS EVERY SESSION)
@@ -74,5 +84,5 @@ Anything needing the owner (installs, accounts, approvals, medical sign-off) goe
 "Questions for owner" in your reply, and you stop at that point rather than guess.
 
 ## Later (not now)
-AI grading of free-text reports, paid human second read, user accounts, B2B access for
+AI grading / detailed report comparison, paid human second read, B2B access for
 teleradiology companies and hospitals, own custom viewer if needed.
