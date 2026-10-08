@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "c0001",
+  "age": 28,
+  "sex": "M",
+  "modality": "MR",
+  "study": "MRI brain with contrast",
+  "history": "New-onset seizures.",
+  "historyNote": "Teaching history written for this simulator; not the patient's actual record.",
+  "viewer": {
+    "type": "dicomjson",
+    "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0001/study.json"
+  },
+  "referenceFile": "c0001.reference.json",
+  "source": {
+    "collection": "ReMIND",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "citation": "Juvekar, P., Dorent, R., Kögl, F., Torio, E., Barr, C., Rigolo, L., Galvin, C., Jowkar, N., Kazi, A., Haouchine, N., Cheema, H., Navab, N., Pieper, S., Wells, W. M., Bi, W. L., Golby, A., Frisken, S., & Kapur, T. (2023). The Brain Resection Multimodal Imaging Database (ReMIND) (Version 1) [dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/3RAG-D070",
+    "modifications": "Pre-operative MRI study only. Images de-identified and re-indexed (IDs, UIDs and dates replaced); pixel data unchanged."
+  }
+}

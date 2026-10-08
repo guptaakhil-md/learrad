@@ -1,15 +1,4 @@
 {
-  "cases": [
-    {
-      "id": "c0001",
-      "age": 28,
-      "sex": "M",
-      "modality": "MR",
-      "study": "MRI brain with contrast",
-      "history": "New-onset seizures.",
-      "historyNote": "History written for teaching; not the patient's actual record.",
-      "studyIndexUrl": "https://guptaakhil-md.github.io/learrad-cases-01/c0001/study.json",
-      "source": "ReMIND"
-    }
-  ]
+  "schema": 1,
+  "cases": ["c0001"]
 }

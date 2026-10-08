@@ -6,6 +6,7 @@
   <title>Worklist – Reporting Simulator</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js"></script>
+  <script src="storage.js"></script>
 </head>
 <body>
   <header>
@@ -36,37 +37,50 @@
   </main>
 
   <script>
+    var STATUS_LABEL = { draft: 'Draft', submitted: 'Reported' };
+
     function cell(text) {
       var td = document.createElement('td');
       td.textContent = text;
       return td;
     }
 
-    loadCases().then(function (cases) {
+    function showMessage(text) {
       var body = document.getElementById('worklist');
       body.textContent = '';
-      cases.forEach(function (c) {
-        var row = document.createElement('tr');
-        var first = document.createElement('td');
-        var link = document.createElement('a');
-        link.href = 'read.html?case=' + encodeURIComponent(c.id);
-        link.textContent = c.id.toUpperCase();
-        first.appendChild(link);
-        row.appendChild(first);
-        row.appendChild(cell(c.age + ' / ' + c.sex));
-        row.appendChild(cell(c.modality));
-        row.appendChild(cell(c.study));
-        row.appendChild(cell(c.history));
-        row.appendChild(cell('Unread'));
-        body.appendChild(row);
-      });
-    }).catch(function (error) {
-      document.getElementById('worklist').innerHTML = '';
       var row = document.createElement('tr');
-      var td = cell(error.message);
+      var td = cell(text);
       td.colSpan = 6;
       row.appendChild(td);
-      document.getElementById('worklist').appendChild(row);
+      body.appendChild(row);
+    }
+
+    loadCases().then(function (cases) {
+      return Promise.all(cases.map(function (c) {
+        return LearradStore.getAttempt(c.id);
+      })).then(function (attempts) {
+        var body = document.getElementById('worklist');
+        body.textContent = '';
+        cases.forEach(function (c, i) {
+          var status = attempts[i] ? attempts[i].status : null;
+          var row = document.createElement('tr');
+          var first = document.createElement('td');
+          var link = document.createElement('a');
+          link.href = (status === 'submitted' ? 'reveal.html' : 'read.html') +
+            '?case=' + encodeURIComponent(c.id);
+          link.textContent = c.id.toUpperCase();
+          first.appendChild(link);
+          row.appendChild(first);
+          row.appendChild(cell(c.age + ' / ' + c.sex));
+          row.appendChild(cell(c.modality));
+          row.appendChild(cell(c.study));
+          row.appendChild(cell(c.history));
+          row.appendChild(cell(STATUS_LABEL[status] || 'Unread'));
+          body.appendChild(row);
+        });
+      });
+    }).catch(function (error) {
+      showMessage(error.message);
     });
   </script>
 </body>

@@ -6,6 +6,7 @@
   <title>Reveal – Reporting Simulator</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js"></script>
+  <script src="storage.js"></script>
 </head>
 <body>
   <header>
@@ -13,56 +14,132 @@
     <nav>
       <a href="index.html">Worklist</a>
     </nav>
+    <span class="case-line" id="case-line"></span>
   </header>
 
   <main>
-    <h1>Reveal <span id="case-id"></span></h1>
-    <p class="placeholder-note">Placeholder page. No real case content yet.</p>
+    <h1>Reveal</h1>
+    <p id="page-message">Loading…</p>
 
-    <div class="split even">
-      <div class="panel">
-        <h2>Your report</h2>
-        <p>Your submitted report will appear here.</p>
+    <div id="reveal" hidden>
+      <p class="draft-banner" id="draft-banner" hidden>
+        DRAFT reference: not yet written and signed off by a radiologist. Do not rely on it.
+      </p>
+
+      <div class="split even">
+        <div class="panel">
+          <h2>Your report</h2>
+          <p class="report-text" id="user-report"></p>
+          <p class="placeholder-note" id="user-meta"></p>
+        </div>
+        <div class="panel">
+          <h2>Reference report</h2>
+          <div id="reference-report"></div>
+          <p class="placeholder-note" id="sign-off"></p>
+        </div>
       </div>
-      <div class="panel">
-        <h2>Reference report</h2>
-        <p>The radiologist-reviewed reference report will appear here.</p>
+
+      <div class="split even">
+        <div class="panel">
+          <h2>Proof of diagnosis</h2>
+          <p class="placeholder-note" id="reference-standard"></p>
+          <ul id="proof"></ul>
+        </div>
+        <div class="panel">
+          <h2>What imaging alone can decide</h2>
+          <p class="report-text" id="imaging-limits"></p>
+        </div>
       </div>
-    </div>
 
-    <div class="panel">
-      <h2>Rubric (self-assessed)</h2>
-      <ul class="checklist">
-        <li><label class="inline"><input type="checkbox"> Rubric item 1</label></li>
-        <li><label class="inline"><input type="checkbox"> Rubric item 2</label></li>
-        <li><label class="inline"><input type="checkbox"> Rubric item 3</label></li>
-      </ul>
-    </div>
-
-    <div class="split even">
       <div class="panel">
-        <h2>Key findings</h2>
-        <p>Annotated key images and lesion overlays will appear here.</p>
+        <h2>Teaching points</h2>
+        <ul id="teaching"></ul>
       </div>
-      <div class="panel">
-        <h2>Proof of diagnosis</h2>
-        <p>Reference standard (histopathology, surgery, follow-up etc.) will appear here.</p>
-      </div>
-    </div>
 
-    <div class="panel">
-      <h2>Teaching points</h2>
-      <p>Short teaching points will appear here.</p>
+      <a class="button" id="view-images" href="#" target="_blank" rel="noopener">Open the images again</a>
+      <a class="button secondary" href="index.html">Back to worklist</a>
     </div>
-
-    <a class="button" href="index.html">Back to worklist</a>
   </main>
 
   <script>
+    var NOT_WRITTEN = 'Not written yet.';
+    var CONFIDENCE = { low: 'Low', moderate: 'Moderate', high: 'High' };
     var caseId = new URLSearchParams(location.search).get('case');
-    if (caseId) {
-      document.getElementById('case-id').textContent = '– ' + caseId.toUpperCase();
+    var pageMessage = document.getElementById('page-message');
+
+    function setText(id, text) {
+      var el = document.getElementById(id);
+      el.textContent = text || NOT_WRITTEN;
+      el.classList.toggle('missing', !text);
     }
+
+    function fillList(id, items) {
+      var list = document.getElementById(id);
+      (items && items.length ? items : [NOT_WRITTEN]).forEach(function (item) {
+        var li = document.createElement('li');
+        li.textContent = item;
+        list.appendChild(li);
+      });
+      list.classList.toggle('missing', !(items && items.length));
+    }
+
+    function reportSection(container, title, text) {
+      var heading = document.createElement('h3');
+      heading.textContent = title;
+      var body = document.createElement('p');
+      body.className = 'report-text' + (text ? '' : ' missing');
+      body.textContent = text || NOT_WRITTEN;
+      container.appendChild(heading);
+      container.appendChild(body);
+    }
+
+    loadCase(caseId).then(function (c) {
+      document.getElementById('case-line').textContent = caseLine(c);
+
+      return LearradStore.getAttempt(c.id).then(function (attempt) {
+        // The reference is only fetched once the user's own report is locked in.
+        if (!attempt || attempt.status !== 'submitted') {
+          pageMessage.textContent = '';
+          var link = document.createElement('a');
+          link.href = 'read.html?case=' + encodeURIComponent(c.id);
+          link.textContent = 'Report this case first';
+          pageMessage.appendChild(link);
+          pageMessage.appendChild(document.createTextNode(' to see the reference report.'));
+          return;
+        }
+
+        return loadReference(c).then(function (ref) {
+          setText('user-report', attempt.report);
+          document.getElementById('user-meta').textContent =
+            'Confidence: ' + (CONFIDENCE[attempt.confidence] || attempt.confidence) +
+            ' · Would call the clinician: ' + (attempt.callClinician ? 'Yes' : 'No') +
+            ' · Submitted ' + new Date(attempt.submittedAt).toLocaleString();
+
+          var report = document.getElementById('reference-report');
+          reportSection(report, 'Technique', ref.referenceReport.technique);
+          reportSection(report, 'Findings', ref.referenceReport.findings);
+          reportSection(report, 'Impression', ref.referenceReport.impression);
+          reportSection(report, 'Recommendation', ref.referenceReport.recommendation);
+
+          document.getElementById('draft-banner').hidden = ref.status !== 'draft';
+          document.getElementById('sign-off').textContent = ref.signOff
+            ? 'Reviewed and signed off by ' + ref.signOff.name + ', ' + ref.signOff.date + '.'
+            : 'Not yet signed off by a radiologist.';
+
+          document.getElementById('reference-standard').textContent =
+            'Reference standard: ' + ref.referenceStandard.type + '. ' + ref.referenceStandard.summary;
+          fillList('proof', ref.proofOfDiagnosis);
+          setText('imaging-limits', ref.whatImagingCanDecide);
+          fillList('teaching', ref.teachingPoints);
+
+          document.getElementById('view-images').href = viewerUrl(c);
+          pageMessage.remove();
+          document.getElementById('reveal').hidden = false;
+        });
+      });
+    }).catch(function (error) {
+      pageMessage.textContent = error.message;
+    });
   </script>
 </body>
 </html>

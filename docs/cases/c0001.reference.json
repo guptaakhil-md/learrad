@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "caseId": "c0001",
+  "status": "draft",
+  "signOff": null,
+  "referenceStandard": {
+    "type": "histopathology",
+    "summary": "Surgical resection with histopathology and molecular testing."
+  },
+  "proofOfDiagnosis": [
+    "Histopathology: astrocytoma, WHO grade 3 (WHO CNS 2021 classification).",
+    "IDH-mutant. 1p/19q not co-deleted. MGMT promoter methylated.",
+    "Location recorded by the treating team: left temporal lobe.",
+    "Pre-operative tumour volume from the collection's segmentation: about 35 mL.",
+    "Recorded by the collection as non-enhancing with T2/FLAIR hyperintensity.",
+    "No previous craniotomy."
+  ],
+  "whatImagingCanDecide": null,
+  "referenceReport": {
+    "technique": "MRI brain: 3D T1 (MP2RAGE), 3D T1 post-contrast, 3D T2 (SPACE), 3D sagittal T2 FLAIR. Images are defaced. No diffusion, susceptibility or perfusion sequences are included in the published study.",
+    "findings": null,
+    "impression": null,
+    "recommendation": null
+  },
+  "teachingPoints": []
+}

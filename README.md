@@ -9,14 +9,14 @@ It is not an exam-prep product. **Not for clinical use.**
 
 ## Status
 
-Phase 1: one real case end to end. Worklist and reading screen work; saving and
-the reveal page are still placeholders.
+Phase 1: one real case end to end. Worklist, reading screen (report saved in the
+browser) and reveal page work for one case; its reference report is still a draft.
 
 ## Layout
 
 - `docs/` – the static site (worklist, reading screen, reveal) and `cases/index.json`
 - `viewer/` – our OHIF configuration
-- `scripts/` – `setup-ohif.ps1` (local viewer), `build-dicom-json.js` (study index)
+- `scripts/` – `setup-ohif.ps1` (local viewer), `build-case.js` (de-identify a study and build its index)
 - `.github/workflows/deploy.yml` – builds OHIF and publishes site + viewer to GitHub Pages
 - `data/` – local imaging data, gitignored. DICOM/NIfTI are never committed here.
 - `CLAUDE.md` – project brief and rules
@@ -53,7 +53,7 @@ a case locally, serve a local copy of the data repo with CORS
 ## Add a study
 
 ```bash
-node scripts/build-dicom-json.js <studyFolder> <publicUrlOfThatFolder/> <studyFolder>/study.json <caseId>
+node scripts/build-case.js <downloadedStudyFolder> data/learrad-cases-01/<caseId> <publicUrlOfThatFolder/> <caseId>
 ```
 
 ## Licence and data credits

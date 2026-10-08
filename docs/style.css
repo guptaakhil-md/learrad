@@ -91,6 +91,27 @@ header .case-line { color: var(--muted); font-size: 13px; }
   border: 0;
 }
 
+.viewer-box iframe.loading { opacity: 0; }
+
+h3 { font-size: 13px; margin: 14px 0 4px; color: var(--muted); font-weight: 600; }
+h3:first-child { margin-top: 0; }
+
+.report-text { white-space: pre-wrap; margin: 0; }
+.missing { color: var(--muted); font-style: italic; }
+
+.draft-banner {
+  background: #3a2a05;
+  border: 1px solid #a8780f;
+  color: #ffd98a;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  font-weight: 600;
+}
+
+button.button { border: 0; font: inherit; font-weight: 600; cursor: pointer; }
+.button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+
 footer {
   max-width: 1400px;
   margin: 24px auto 0;

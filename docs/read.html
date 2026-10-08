@@ -6,6 +6,7 @@
   <title>Reading – Reporting Simulator</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js"></script>
+  <script src="storage.js"></script>
 </head>
 <body>
   <header>
@@ -19,48 +20,122 @@
   <main class="wide">
     <div class="split reading">
       <div class="viewer-box">
-        <iframe id="viewer" title="Image viewer" allow="fullscreen"></iframe>
         <p id="viewer-message">Loading case…</p>
+        <iframe id="viewer" title="Image viewer" allow="fullscreen" hidden></iframe>
       </div>
 
-      <div class="panel">
+      <form class="panel" id="report-form">
         <h2>Your report</h2>
-        <textarea placeholder="Findings and impression..."></textarea>
+        <textarea id="report" placeholder="Findings and impression..." required></textarea>
 
-        <label for="confidence">Confidence</label>
+        <label for="confidence">Confidence in your main conclusion</label>
         <select id="confidence">
-          <option>Low</option>
-          <option selected>Moderate</option>
-          <option>High</option>
+          <option value="low">Low</option>
+          <option value="moderate" selected>Moderate</option>
+          <option value="high">High</option>
         </select>
 
         <label class="inline">
-          <input type="checkbox"> I would call the clinician
+          <input type="checkbox" id="call-clinician"> I would call the clinician
         </label>
 
-        <a class="button" id="submit" href="reveal.html">Submit report</a>
-        <p class="placeholder-note">Saving and the reveal page are not wired up yet.</p>
-      </div>
+        <button class="button" id="submit" type="submit">Submit report</button>
+        <p class="placeholder-note" id="save-status"></p>
+      </form>
     </div>
   </main>
 
   <script>
     var caseId = new URLSearchParams(location.search).get('case');
     var message = document.getElementById('viewer-message');
+    var form = document.getElementById('report-form');
+    var report = document.getElementById('report');
+    var confidence = document.getElementById('confidence');
+    var callClinician = document.getElementById('call-clinician');
+    var saveStatus = document.getElementById('save-status');
+    var saveTimer = null;
 
-    loadCases().then(function (cases) {
-      var c = findCase(cases, caseId);
-      if (!c) {
-        message.textContent = 'Case not found. Go back to the worklist.';
-        return;
-      }
-      document.getElementById('case-line').textContent =
-        c.id.toUpperCase() + ' · ' + c.age + ' / ' + c.sex + ' · ' + c.study + ' · ' + c.history;
-      document.getElementById('submit').href = 'reveal.html?case=' + encodeURIComponent(c.id);
-      document.getElementById('viewer').src = viewerUrl(c);
-      message.remove();
+    function fields() {
+      return {
+        report: report.value,
+        confidence: confidence.value,
+        callClinician: callClinician.checked,
+      };
+    }
+
+    function saveDraftSoon() {
+      clearTimeout(saveTimer);
+      saveStatus.textContent = 'Saving…';
+      saveTimer = setTimeout(function () {
+        LearradStore.saveDraft(caseId, fields()).then(function () {
+          saveStatus.textContent = 'Draft saved in this browser.';
+        }).catch(function () {
+          saveStatus.textContent = 'Could not save the draft in this browser.';
+        });
+      }, 600);
+    }
+
+    // The viewer is slow on a first visit; keep the message up until it has drawn an
+    // image, or for a fixed time if we cannot look inside the frame.
+    function showViewer(url) {
+      var frame = document.getElementById('viewer');
+      message.textContent = 'Loading viewer… (first load can take ~20 s)';
+      frame.hidden = false;
+      frame.classList.add('loading');
+      frame.src = url;
+
+      var started = Date.now();
+      var timer = setInterval(function () {
+        var ready = false;
+        try {
+          ready = !!frame.contentDocument.querySelector('canvas');
+        } catch (error) {
+          ready = Date.now() - started > 8000;
+        }
+        if (ready || Date.now() - started > 60000) {
+          clearInterval(timer);
+          frame.classList.remove('loading');
+          message.remove();
+        }
+      }, 500);
+    }
+
+    loadCase(caseId).then(function (c) {
+      document.getElementById('case-line').textContent = caseLine(c);
+      showViewer(viewerUrl(c));
+
+      return LearradStore.getAttempt(c.id).then(function (attempt) {
+        if (attempt) {
+          report.value = attempt.report || '';
+          confidence.value = attempt.confidence || 'moderate';
+          callClinician.checked = !!attempt.callClinician;
+        }
+        if (attempt && attempt.status === 'submitted') {
+          location.replace('reveal.html?case=' + encodeURIComponent(c.id));
+          return;
+        }
+        [report, confidence, callClinician].forEach(function (el) {
+          el.addEventListener('input', saveDraftSoon);
+        });
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          if (!report.value.trim()) {
+            return;
+          }
+          if (!confirm('Submit this report? You cannot change it afterwards.')) {
+            return;
+          }
+          clearTimeout(saveTimer);
+          LearradStore.submit(c.id, fields()).then(function () {
+            location.href = 'reveal.html?case=' + encodeURIComponent(c.id);
+          }).catch(function () {
+            saveStatus.textContent = 'Could not save the report in this browser.';
+          });
+        });
+      });
     }).catch(function (error) {
       message.textContent = error.message;
+      form.hidden = true;
     });
   </script>
 </body>
